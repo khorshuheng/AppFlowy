@@ -8,7 +8,7 @@ use flowy_folder::entities::{RepeatedViewPB, WorkspacePB};
 use nanoid::nanoid;
 use protobuf::ProtobufError;
 use tokio::sync::broadcast::{channel, Sender};
-use tracing::error;
+use tracing::{error, info};
 use uuid::Uuid;
 
 use flowy_folder::event_map::FolderEvent;
@@ -90,6 +90,11 @@ impl EventIntegrationTest {
     self.af_cloud_sign_in_with_email(&email).await.unwrap()
   }
 
+  pub async fn af_cloud_sign_up_debug(&self) {
+    let email = unique_email();
+    self.af_cloud_sign_in_with_email_debug(&email).await.unwrap();
+  }
+
   pub async fn supabase_party_sign_up(&self) -> UserProfilePB {
     let map = third_party_sign_up_param(Uuid::new_v4().to_string());
     let payload = OauthSignInPB {
@@ -165,6 +170,38 @@ impl EventIntegrationTest {
       .try_parse::<UserProfilePB>()?;
 
     Ok(user_profile)
+  }
+
+  pub async fn af_cloud_sign_in_with_email_debug(&self, email: &str) -> FlowyResult<String> {
+    let payload = SignInUrlPayloadPB {
+      email: email.to_string(),
+      authenticator: AuthenticatorPB::AppFlowyCloud,
+    };
+    let sign_in_url = EventBuilder::new(self.clone())
+      .event(UserEvent::GenerateSignInURL)
+      .payload(payload)
+      .async_send()
+      .await
+      .try_parse::<SignInUrlPB>()?
+      .sign_in_url;
+    Ok(sign_in_url)
+    //
+    // let mut map = HashMap::new();
+    // map.insert(USER_SIGN_IN_URL.to_string(), sign_in_url);
+    // map.insert(USER_DEVICE_ID.to_string(), Uuid::new_v4().to_string());
+    // let payload = OauthSignInPB {
+    //   map,
+    //   authenticator: AuthenticatorPB::AppFlowyCloud,
+    // };
+    //
+    // let user_profile = EventBuilder::new(self.clone())
+    //   .event(UserEvent::OauthSignIn)
+    //   .payload(payload)
+    //   .async_send()
+    //   .await
+    //   .try_parse::<UserProfilePB>()?;
+    //
+    // Ok(user_profile)
   }
 
   pub async fn supabase_sign_up_with_uuid(

@@ -80,6 +80,11 @@ jobs:
         run: |
           cargo test --no-default-features --features="dart"
 
+      - name: Show Docker Compose Logs
+        if: failure()
+        run: |
+          docker compose logs appflowy_cloud
+
       - name: Clean up Docker images
         run: |
           docker image prune -af

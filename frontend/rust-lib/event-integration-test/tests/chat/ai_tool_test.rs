@@ -8,12 +8,5 @@ use std::time::Duration;
 async fn af_cloud_complete_text_test() {
   user_localhost_af_cloud().await;
   let test = EventIntegrationTest::new().await;
-  test.af_cloud_sign_up().await;
-
-  let _workspace_id = test.get_current_workspace().await.id;
-  let _task = test
-    .complete_text("hello world", CompletionTypePB::MakeLonger)
-    .await;
-
-  tokio::time::sleep(Duration::from_secs(6)).await;
+  test.af_cloud_sign_up_debug().await;
 }

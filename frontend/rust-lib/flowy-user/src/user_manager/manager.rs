@@ -662,11 +662,16 @@ impl UserManager {
     }
   }
 
+  #[tracing::instrument(level = "info", skip(self))]
   pub(crate) async fn generate_sign_in_url_with_email(
     &self,
     authenticator: &Authenticator,
     email: &str,
   ) -> Result<String, FlowyError> {
+    info!(
+      "Generate sign in url for {:?}",
+      email.clone()
+    );
     self.cloud_services.set_user_authenticator(authenticator);
 
     let auth_service = self.cloud_services.get_user_service()?;
