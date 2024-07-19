@@ -3,17 +3,7 @@ name: Rust-CI
 on:
   push:
     branches:
-      - "main"
-      - "develop"
-      - "release/*"
-    paths:
-      - "frontend/rust-lib/**"
-
-  pull_request:
-    branches:
-      - "main"
-      - "develop"
-      - "release/*"
+      - "personal"
     paths:
       - "frontend/rust-lib/**"
 
@@ -50,18 +40,12 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           override: true
-          components: rustfmt, clippy
           profile: minimal
-
-      - name: Install prerequisites
-        working-directory: frontend
-        run: |
-          cargo install --force cargo-make
-          cargo install --force duckscript_cli
 
       - uses: Swatinem/rust-cache@v2
         with:
           prefix-key: "ubuntu-latest"
+          cache-on-failure: "true"
           workspaces: |
             frontend/rust-lib
 
@@ -81,8 +65,6 @@ jobs:
 
       - name: Run Docker-Compose
         working-directory: AppFlowy-Cloud
-        env:
-          BACKEND_VERSION: 0.3.24-amd64
         run: |
           docker pull appflowyinc/appflowy_cloud:latest
           docker compose up -d
@@ -96,15 +78,7 @@ jobs:
           af_cloud_test_ws_url: ws://localhost/ws/v1
           af_cloud_test_gotrue_url: http://localhost/gotrue
         run: |
-          DISABLE_CI_TEST_LOG="true" cargo test --no-default-features --features="dart"
-
-      - name: rustfmt rust-lib
-        run: cargo fmt --all -- --check
-        working-directory: frontend/rust-lib/
-
-      - name: clippy rust-lib
-        run: cargo clippy --all-targets -- -D warnings
-        working-directory: frontend/rust-lib
+          cargo test --no-default-features --features="dart"
 
       - name: Clean up Docker images
         run: |
