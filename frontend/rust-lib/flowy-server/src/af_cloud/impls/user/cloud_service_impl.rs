@@ -616,9 +616,6 @@ async fn get_admin_client(client: &Arc<AFCloudClient>) -> FlowyResult<Client> {
     ClientConfiguration::default(),
     &client.client_version.to_string(),
   );
-  admin_client
-    .sign_in_password(&admin_email, &admin_password)
-    .await?;
   Ok(admin_client)
 }
 
