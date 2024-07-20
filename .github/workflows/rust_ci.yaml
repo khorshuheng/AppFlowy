@@ -6,6 +6,7 @@ on:
       - "personal"
     paths:
       - "frontend/rust-lib/**"
+      - ".github/workflows/rust_ci.yaml"
 
 env:
   CARGO_TERM_COLOR: always
@@ -82,6 +83,7 @@ jobs:
 
       - name: Show Docker Compose Logs
         if: failure()
+        working-directory: AppFlowy-Cloud
         run: |
           docker compose logs appflowy_cloud
 
