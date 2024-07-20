@@ -53,8 +53,9 @@ jobs:
       - name: Checkout appflowy cloud code
         uses: actions/checkout@v4
         with:
-          repository: AppFlowy-IO/AppFlowy-Cloud
+          repository: khorshuheng/AppFlowy-Cloud
           path: AppFlowy-Cloud
+          ref: personal
 
       - name: Prepare appflowy cloud env
         working-directory: AppFlowy-Cloud
@@ -67,7 +68,6 @@ jobs:
       - name: Run Docker-Compose
         working-directory: AppFlowy-Cloud
         run: |
-          docker pull appflowyinc/appflowy_cloud:latest
           docker compose up -d
 
       - name: Run rust-lib tests
